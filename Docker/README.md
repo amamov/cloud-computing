@@ -6,8 +6,6 @@
 
 - Docker는 플랫폼에 상관없이 실행될 수 있는 애플리케이션 컨테이너를 만들어줍니다.
 
-  - 윈도우에서 exe 파일을 바로 실행하듯이, Docker를 지원하는 플랫폼에서 Docker Image를 받아서 즉시 실행할 수 있습니다.
-
 - Docker Image는 Container의 형태로 Docker Engine이 있는 어디에서나 실행이 가능합니다.
 
   - 대상 : 로컬 머신 (윈도우/맥/리눅스), Azure, AWS 등
@@ -46,9 +44,18 @@
 
 ## Docker 설치
 
-- 각 OS에 맞게 Docker를 설치하고, 버전을 확인한다.
-  - "Error response from daemon: Bad response from docker engine"와 같은 메세지가 출력될 경우, docker daemon이 실행 중이 아니거나, root 권한이 필요할 수 있다. linux / mac에서는 `$ sudo docker --version` 명령어를 사용한다.
-- MAC : 그냥 다운받으면 된다.
+### Linux
+
+```shell
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containered.io
+sudi systemctl enable docker
+sudi systemctl start docker
+```
+
+### Mac OS
+
+그냥 다운받으면 된다.
 
 <br>
 
