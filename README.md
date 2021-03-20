@@ -123,9 +123,3 @@ PaaS 플랫폼이라고 하지만, 자동화된 IaaS에 가깝다.
 #### AWS Lambda
 
 Serverless 플랫폼 AWS에서 직접 운영하는 VM에서 구동. Docker 지원 X
-
-<br>
-
----
-
-<br>
