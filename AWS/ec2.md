@@ -118,6 +118,8 @@ DB_HOST=localhost
    2. `sudo systemctl enable --now gunicorn.socket`
    3. `sudo systemctl enable --now gunicorn`
 
+   > 만일 Django 서비스를 재배포해야할 경우 `sudo systemctl restart gunicorn.service` 명령어를 사용하면 된다.
+
 6. 테스트
 
    1. `curl --unix-socket /run/gunicorn.sock http` # 실행시 HTML 코드가 나오면 성공
@@ -155,7 +157,10 @@ server {
 }
 ```
 
-3. `sudo ln -s /etc/nginx/sites-available/PROJECT_NAME /etc/nginx/sites-enabled` # 사이트 추가
+3. `sudo ln -s /etc/nginx/sites-available/PROJECT_NAME /etc/nginx/sites-enabled` # sites-enabled에 바로가기 추가
+
+   - [리눅스 심볼릭 링크](https://server-talk.tistory.com/140)
+   - [nginx sites-available vs sites-enabled](https://forteleaf.tistory.com/entry/nginx-site-enabled-site-availablemd)
 
 4. `sudo nginx -t` # nginx 설정 문법 검사 및 재기동
 
@@ -216,5 +221,3 @@ c.NotebookApp.ip='172.22.38.188' # 자신의 ip 입력 (ec2 ip 주소 말고)
 ---
 
 <br>
-
-##
