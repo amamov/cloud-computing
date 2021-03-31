@@ -2,7 +2,7 @@
 
 ## deploy django project 1
 
-> [link]()
+> [link](https://github.com/amamov/cloud-infra/blob/main/Infra/basic-dj-project.md)
 
 - Github
 
