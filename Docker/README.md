@@ -385,6 +385,35 @@ CMD ["python3", "/code/manage.py", "runserver", "0.0.0.0:8000"]
 
 <br>
 
+### 히스토리 확인하기
+
+```bash
+docker history amamov/test_dj_2020
+```
+
+<br>
+
+---
+
+<br>
+
+## Docker private registry 만들기
+
+### private registry 만들기
+
+```bash
+docker run -d --name docker-registry -p 5000:5000 registry
+```
+
+### private registry에 이미지 push하기
+
+```bash
+sudo docker tag echo_test 127.0.0.1:5000/echo_test
+sudo docker push 127.0.0.1:5000/echo_test
+```
+
+<br>
+
 ---
 
 <br>
