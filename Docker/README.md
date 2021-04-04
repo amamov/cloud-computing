@@ -6,8 +6,7 @@
 
 - [Docker 기본 명령어 정리](https://subicura.com/2017/01/19/docker-guide-for-beginners-2.html#%EB%8F%84%EC%BB%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0)
 
-- Docker 컨테이너는 **하나의 Forefround 프로세스**를 구동하는 것이 원칙이다.
-- Docker는 리눅스의 chroot 기반의 기술이다
+- [Docker 입문 튜토리얼](https://www.notion.so/b67ed727aea4467cbc3226bb0c8e8336)
 
 <br>
 
@@ -15,13 +14,71 @@
 
 <br>
 
-## Docker Registry
+## Container 기술
 
-- Docker Registry는 Docker Image 저장소를 의미합니다.
-- 공식 저장소로서 Docker Hub (Docker계의 Github)가 있습니다. 이 외에도 각 클라우드 벤더에서 저장소를 지원해줍니다.
-  - Azure Container Registry
-  - AWS Elastic Container Registry
-  - Google Container Registry
+![container](../images/d2.png)
+
+> 출처 : 재즐 포프 notion
+
+- 동일 시스템에서 실행하는 소프트웨어의 컴포넌트가 충돌하거나 다양한 종속성을 가지고 있음
+
+- 컨테이너는 가상머신을 사용해 각 마이크로 서비스를 격리(isolate)하는 기술
+
+- 컨테이너는 가상머신처럼 하드웨어를 전부 구현하지 않기 때문에 매우 빠른 실행 가능
+
+- 프로세스의 문제가 발생할 경우 컨테이너 전체를 조정해야 하기 때문에 컨테이너에 하나의 프로세스를 실행하도록 하는 것이 좋다. (like 브라우저)
+
+- 하이퍼바이저의 필요 없는 공간을 활용하면 더 많은 자원을 앱에 투자 가능
+
+- 컨테이너 격리 기술
+  - 리눅스 네임 스페이스: 각 프로세스가 파일 시스템 마운트, 네트워크, 유저(uid), 호스트 네임(uts) 등 에 대해 시스템에 독립 뷰를 제공
+  - 리눅스 컨트롤 그룹: 프로세스로 소비할 수 있는 리소스 양(CPU, 메모리, I/O, 네트워크 대역대,device 노드 등)을 제한
+
+<br>
+
+---
+
+<br>
+
+## Docker 개요
+
+![docker](../images/d1.png)
+
+> 출처 : 재즐 포프 notion
+
+<br>
+
+- Docker 컨테이너는 **하나의 Forefround 프로세스**를 구동하는 것이 원칙이다.
+- Docker는 리눅스의 chroot 기반의 기술이다
+- 컨테이너 기술을지원하는 다양한 프로젝트 중에 하나
+- 다양한 운영체제에서 사용 가능(리눅스, 윈도우, MacOS)
+- 애플리케이션에 국한 되지 않고 의존성 및 파일 시스템까지 패키징하여 빌드, 배포, 실행을 단순
+- 리눅스의 네임 스페이스와 cgroups와 같은 커널 기능을 사용하여 가상화
+- 도커는 다양한 클라우드 서비스 모델과 같이 사용 가능
+
+<br>
+
+---
+
+<br>
+
+## Docker 구성 요소
+
+- **이미지**
+
+  - 필요한 프로그램과 라이브러리, 소스를 설치한 뒤 만든 하나의 파일
+
+- **컨테이너**
+
+  - 이미지를 격리하여 독립된 공간에서 실행한 가상 환경
+
+- **레지스트리**
+  - Docker Registry는 Docker Image 저장소를 의미한다.
+  - 공식 저장소로서 Docker Hub (Docker계의 Github)가 있다.
+  - 이 외에도 각 클라우드 벤더에서 저장소를 지원
+    - Azure Container Registry
+    - AWS Elastic Container Registry
+    - Google Container Registry
 
 <br>
 
@@ -50,28 +107,37 @@ sudo systemctl start docker
 
 <br>
 
-## Docker 명령어 정리
+## Docker 기본 명령어 정리
+
+![docker](../images/d3.png)
+
+> 출처 : 재즐 포프 notion
 
 - `$ docker version` : 클라이언트와 서버의 버전을 알 수 있다.
 
 <br>
 
-- `$ docker run 이미지이름` : Image를 받아서 해당 이미지 기반의 Container를 실행한다.
+- `$ docker run 이미지이름` : 이미지가 없다면 해당 이미지를 받아서 해당 이미지 기반의 Container를 Create하고 Start한다.
 
   - `$ docker run --name 컨테이너이름 이미지이름`
   - `$ docker run --rm 이미지이름` : 컨테이너를 생성하고 실행이 끝나면 바로 지운다.
 
 <br>
 
-- `$ docker container ls` : 컨테이너 목록들을 확인할 수 있다.
+- `$ docker container ls` : 실행중인 컨테이너 목록들을 확인할 수 있다.
 
+  - `$ docker ps`와 같다.
   - `$ docker container ls -a` : 모든 컨테이너 목록들을 확인할 수 있다.
+    - `$ docker ps -a`와 같다.
 
 <br>
 
-- `$ docker ps` : 현재 실행중인 컨테이너 목록들을 확인할 수 있다.
+- `$ docker stop 컨테이너_ID(또는 컨테이너_이름)` : 컨테이너 실행을 중지한다.
 
-  - `$ docker ps -a` : 모든 컨테이너 목록들을 확인할 수 있다.
+<br>
+
+- `$ docker container rm 컨테이너_ID` : 컨테이너를 제거한다.
+  - `$ docker rm 컨테이너_ID`와 같다.
 
 <br>
 
@@ -79,16 +145,138 @@ sudo systemctl start docker
 
 <br>
 
-- `$ docker container rm 컨테이너_ID` : 컨테이너를 제거한다.
-
-<br>
-
 - `$ docker pull nginx` : nginx Image를 받아온다.
 
 <br>
 
-- `$ docker run --rm --detach --publish 8000:80 nginx`
-  - `--name` : 옵션으로 컨테이너 이름을 지정할 수 있다.
+- `$ docker create 컨테이너_ID` : 해당하는 컨테이너를 실행한다.
+
+<br>
+
+- `$ docker start 컨테이너_ID` : 해당하는 컨테이너를 실행한다.
+
+<br>
+
+- `$ docker restart 컨테이너_ID` : 해당하는 컨테이너를 재실행한다.
+
+<br>
+
+### 유용한 명령어
+
+- `$ docker run --rm --detach --publish 8000:80 --name nx nginx`
+
+  - `--detach` : 백그라운드에서 실행한다. (`-d`)
+  - `--public` : 포트 바인딩을 한다. `내부에서 개방할 포트 : 외부에서 접근할 포트` (`-p`)
+  - `--name` : 옵션으로 컨테이너 이름을 지정할 수 있다. (`-n`)
+
+<br>
+
+- 컨테이너 내부 쉘 실행
+
+```shell
+docker exec -it nx /bin/bash
+```
+
+<br>
+
+- 컨테이너 로그 확인
+
+```shell
+docker logs nx
+```
+
+<br>
+
+- 호스트 및 컨테이너 간 파일 복사
+
+```shell
+sudo docker cp <path> <to container>:<path>
+sudo docker cp <from container>:<path> <path>
+sudo docker cp <from container>:<path> <to container>:<path>
+```
+
+<br>
+
+- 호스트 및 컨테이너 간 파일 복사
+
+```shell
+sudo docker cp <path> <to container>:<path>
+sudo docker cp <from container>:<path> <path>
+sudo docker cp <from container>:<path> <to container>:<path>
+```
+
+<br>
+
+- 도커 컨테이너 모두 삭제
+
+```shell
+sudo docker stop `sudo docker ps -a -q`
+sudo docker rm `sudo docker ps -a -q`
+```
+
+<br>
+
+---
+
+<br>
+
+## Docker Image Layer
+
+![docker](../images/d4.png)
+
+> 출처 : 재즐 포프 notion
+
+- 왼쪽
+
+  - 각각 다른 이미지 A와 이미지 B에 대해 같은 레이어 A, B, C를 공유하고 있는 상태이다.
+
+  - 이미지 A를 통해서 이미지 B를 만들면 레이어 D가 하나 생성이 되고 push를 할 때 레이어 D만 push가 된다.
+
+  - 이미지 A가 있었을 때 이미지 B를 다운로드 받는다면 없는 레이어 D만 다운로드 받는다.
+
+  - 이미지 A와 이미지 B를 동시에 사용하고 있는데 이미지 A를 지운다해도 레이어 A, B, C는 그대로 남아있는다.
+
+- 오른쪽
+  - 레이어 A, B는 동일하게 각각의 이미지에서 사용하고 있고 레이어 C는 다르게 올려놓은 것이다.
+  - 이미 존재하는 레이어 A, B는 새로 다운로드 받을 필요가 없음
+
+### Docker 이미지 정보 확인
+
+```shell
+docker pull nginx
+docker inspect nginx
+```
+
+### Docker 이미지 저장소 확인
+
+```shell
+# Docker 이미지 저장소 위치 확인
+docker info
+cd /var/lib/docker/overlay2
+
+# 레이어 저장소 확인
+ls
+```
+
+### Docker 용량 확인하기
+
+```shell
+#도커가 설치된 환경 용량 확인
+du -sh /var/lib/docker/
+2.0G	/var/lib/docker/
+
+# 도커 이미지에 대한 정보 저장 디렉토리
+du -sh /var/lib/docker/image/
+2.7M	/var/lib/docker/image/
+
+# 도커 이미지의 파일 시스템이 사용되는 실제 디렉토리
+du -sh /var/lib/docker/overlay2/
+2.0G	/var/lib/docker/overlay2/
+
+# 도커 컨테이너 정보 저장 디렉토리
+du -sh /var/lib/docker/containers/
+136K	/var/lib/docker/containers/
+```
 
 <br>
 
