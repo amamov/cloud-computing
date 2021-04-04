@@ -1,18 +1,33 @@
 # Docker를 사용하여 Jupyter LAB 서비스 구축
 
-## [Jupyter Docker Hub](https://hub.docker.com/r/jupyter/datascience-notebook)
-
 ## 볼륨 마운트 옵션 사용해 로컬 파일 공유하기 (Volume Mount)
 
-- 도커 컨테이너에서 작성되거나 수정된 파일
+도커 이미지로 컨테이너를 생성하면 이미지는 읽기 전용이 되며 컨테이너의 변경사항만 별도로 각 컨테이너의 정보로 보존한다.
 
-  - 컨테이너가 파기된다면?
-    - 호스트에서도 함께 삭제된다.
-    - 호스트 쪽 파일 시스템에 마운트한다면 컨테이너에서 삭제해도 호스트 파일 시스템에 남아있게 된다.
-    - 이때 사용하는 것이 데이터 볼륨
-    - 마운트한다. ("USB로 연결한다.")
+예를 들어 mysql 이미지의 경우 이미지에는 mysql을 실행하는데 필요한 애플리케이션 정보만 들어있고, 컨테이너를 생성하여 mysql 컨테이너에는 쓰기모드가 가능하여 여러 데이터가 저장된다.
 
-- 윈도우와 도커 간의 공유 기능
+하지만 만일 도커 컨테이너를 삭제한다면, 컨테이너 계층의 데이터도 모두 삭제 된다.
+
+그렇기 때문에 데이터의 영속성을 유지해야 하는데 이때 볼륨을 통해 쉽게 활용할 수 있다.
+
+- 볼륨을 활용하는 방법
+  1. 호스트와 볼륨을 공유
+  2. 볼륨 컨테이너를 활용
+  3. 도커가 관리하는 볼륨을 생성
+
+### 호스트 볼륨 공유
+
+```shell
+docker run -e MYSQL_ROOT_PASSWORD=1234 -v /Users/chul/Documents/Docker/volume:/var/lib/mysql mysql
+```
+
+해당 경로에 파일이 생성된 것을 확인 할 수 있다.
+
+혼동할 수 있는 점은 `/var/lib/mysql` 을 동기화 하는 것이 아닌 완전히 같은 디렉토리라는 것이다.
+
+호스트 디렉토리가 없다면, 생성하고 컨테이너 내부의 디렉토리는 삭제하게 된다.
+
+만일 컨테이너 내부에 디렉토리가 존재하고, 호스트 볼륨공유를 통해 호스트 디렉토리를 지정하면 컨테이너 디렉토리는 덮어씌워진다. (Mount)
 
 ```shell
 docker run -v <호스트 경로>:<컨테이너 내 경로>:<권한>
@@ -23,7 +38,7 @@ docker run -v <호스트 경로>:<컨테이너 내 경로>:<권한>
   - `ro` : 읽기 전용
   - `rw` : 읽기 및 쓰기
 
-### nginx 볼륨 마운트하기
+#### nginx 볼륨 마운트하기
 
 ```bash
 sudo docker run -d -p 80:80 --rm -v /var/www:/usr/share/nginx/html:ro nginx
@@ -34,7 +49,15 @@ cd /var/www/ && vi index.html
 curl 127.0.0.1
 ```
 
-### Jupyter LAB 환경 구축하기
+<br>
+
+---
+
+<br>
+
+## Jupyter LAB 환경 구축하기
+
+### [Jupyter Docker Hub](https://hub.docker.com/r/jupyter/datascience-notebook)
 
 현재 디렉토리를 사용하여 notebook 컨테이너 실행
 
