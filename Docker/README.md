@@ -106,6 +106,9 @@ sudo service docker restart
 
 # 로그아웃 후 로그인해서 정상 동작하는 지 확인한다.
 docker version
+
+# sudo systemctl enable docker
+# sudo systemctl start docker
 ```
 
 ### Mac OS
