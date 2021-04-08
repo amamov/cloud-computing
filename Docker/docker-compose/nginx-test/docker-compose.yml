@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  nginx: # 컨테이너 이름
+    image: nginx
+    ports:
+      - 60080:80
+    volumes:
+      - ./:/usr/share/nginx/html

@@ -90,11 +90,22 @@
 
 ### Ubuntu
 
+#### Install using the convenience script
+
 ```shell
 curl -fsSL https://get.docker.com/ | sudo sh
+
 docker version # 잘 설치 되었나 확인
-sudo systemctl enable docker
-sudo systemctl start docker
+
+# 기본적으로 root 계정 외에는 docker 실행 권한이 없다.
+# 로그인 한 계정에 도커 그룹에 사용자를 추가하면 일반 유저도 docker 명령어 사용이 가능해 진다.
+sudo usermod -a -G docker $USER
+
+# 도커 서비스를 재기동 해준다.
+sudo service docker restart
+
+# 로그아웃 후 로그인해서 정상 동작하는 지 확인한다.
+docker version
 ```
 
 ### Mac OS
