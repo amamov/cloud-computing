@@ -1,4 +1,4 @@
-# docker-compose = django + nginx + gunicorn + oracle
+# docker-compose = django + nginx + gunicorn + mysql
 
 ## 1. VPS(ubuntu) 접속
 
@@ -176,11 +176,17 @@ http {
 # nginx + django + gunicorn
 
 upstream web {
-    server django:8000
+    server django:8000;
+}
+
+server {
+    # server_name이 매칭되지 않았을 때 동작하는 기본 서버 블록
+    return 404;
 }
 
 server {
     listen 80;
+    server_name api.iflag.co www.api.iflag.co 127.0.0.1 localhost;
 
     charset utf-8;
     client_max_body_size 128M;
@@ -193,19 +199,24 @@ server {
         proxy_set_header Host $host;
         proxy_redirect off;
     }
-    }
 
-    location /media/ {
-        alias /srv/docker-server/config/.media/;
-    }
+    ## serving media and storage file ##
 
-    location /static/ {
-        alias /srv/docker-server/config/.static/;
-    }
+    # location /media/ {
+    #    alias /srv/docker-server/config/media/;
+    # }
+
+    # location /static/ {
+    #    alias /srv/docker-server/config/static/;
+    # }
 }
 ```
 
-위의 설정 파일을 해석하면 nginx 해당하는 server_name의 80번 포트로 접속하면 web으로 요청을 돌린다. web는 위에서 정의한 upstream이다. 즉, 해당하는 server_name의 80번 포트로 접속하면 nginx는 Reversy Proxy를 이용해서 `server django:8000;`에게 요청을 전달해주게 된다.
+위의 설정 파일을 해석하면 nginx 해당하는 server_name의 80번 포트로 접속하면 web으로 요청을 돌린다.
+
+web는 위에서 정의한 upstream이다.
+
+즉, 해당하는 server_name의 80번 포트로 접속하면 nginx는 Reverse Proxy를 이용해서 `server django:8000;`에게 요청을 전달해주게 된다.
 
 ```Dockerfile
 # ~/docker_server/nginx/Dockerfile
@@ -232,12 +243,14 @@ docker run --rm -p 4000:80 PROJECT-nginx
 # host not found in upstream "django:8000" error가 나면 정상이다.
 ```
 
-## 4. set up docker-compose
+## 4. set up docker-compose with mysql-image
 
 ```bash
 # ~/project-server
 
 vi docker-compose.yml
+vi .env.prod # django 환경변수 작성
+vi .env.db # db 환경변수 작성
 ```
 
 ```yml
@@ -273,9 +286,33 @@ services:
     volumes:
       - ./PROJECT:/srv/docker-server
       - ./log:/var/log/guinicorn
+    depends_on:
+      - db
+
+  db:
+    container_name: db
+    image: mysql:5.7
+    restart: always
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+    env_file:
+      - ./.env.db
+    ports:
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql/
+
+volumes:
+  db_data: {}
 ```
 
-````
+```yml
+# 데이터베이스의 실제 데이터를 ./data와 같은 로컬 폴더에 저장해도 되지만,
+# 실수로 이 디렉터리가 지워진다거나 소스코드 버전 관리 시스템에 들어가는 것을 방지하기 위해
+# 이 디렉터리를 직접 관리하지 말고 도커에 맡긴다. docker volume ls 명령어로 확인할 수 있다.
+volumes:
+  db_data: {}
+# 이 볼륨을 지우려면 docker volume rm project_db_data 명령을 사용한다.
+```
 
 ```Dockerfile
 # ~/docker_server/nginx/Dockerfile
@@ -291,7 +328,7 @@ RUN ln -s /etc/nginx/sites-available/nginx-app.conf /etc/nginx/sites-enabled/
 # EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
-````
+```
 
 ```Dockerfile
 # project-server/PROJECT/Dockerfile
@@ -316,6 +353,17 @@ RUN pip install -r requirements.txt
 
 ```bash
 docker-compose up -d --build
+
+# db_data 확인
+docker volume ls
+```
+
+````bash
+# database migrate
+docker-compose exec django python manage.py migrate --settings=config.settings.prod
+
+# create superuser
+docker-compose exec django python manage.py createsuperuser --settings=config.settings.prod
 ```
 
 <br>
@@ -343,7 +391,7 @@ docker-compose up -d --build
     "port": 3306
   }
 }
-```
+````
 
 ```yml
 # ~/project-server/docker-compose.yml
