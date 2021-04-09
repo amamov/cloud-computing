@@ -1,5 +1,17 @@
 # docker-compose = django + nginx + gunicorn + mysql
 
+- Github
+
+- AWS S3
+
+- Oracle Cloud VPS - ubuntu 20.04
+
+- Docker-Compose
+  - django
+  - nginx
+  - gunicorn
+  - mysql
+
 ## 1. VPS(ubuntu) 접속
 
 ## 2. 필요한 패키지 셋업

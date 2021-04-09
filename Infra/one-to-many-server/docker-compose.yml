@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    image: iflag-nginx
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./web1-backend:/srv/docker-server/web1
+      - ./web2-backend:/srv/docker-server/web2
+      - ./log:/var/log/nginx
+    depends_on:
+      - web1
+      - web2
+
+  web1:
+    container_name: web1
+    build: ./web1-backend
+    image: web1-image
+    restart: always
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    env_file:
+      - ./env/.web1.env
+    volumes:
+      - ./web1-backend:/srv/docker-server
+      - ./log:/var/log/guinicorn
+    depends_on:
+      - db
+
+  web2:
+    container_name: web2
+    build: ./web2-backend
+    image: web2-image
+    restart: always
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8001
+    ports:
+      - 8001:8001
+    env_file:
+      - ./env/.web2.env
+    volumes:
+      - ./web2-backend:/srv/docker-server
+      - ./log:/var/log/guinicorn
+
+  db:
+    container_name: db
+    image: mysql:5.7
+    restart: always
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+    env_file:
+      - ./.env.db
+    ports:
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql/
+
+volumes:
+  db_data: {}
