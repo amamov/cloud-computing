@@ -18,7 +18,7 @@
 
 ```bash
 sudo apt update && sudo apt -y upgrade
-sudo apt install -y python3 python3-pip vim git nginx
+sudo apt install -y vim git
 
 # install docker
 curl -fsSL https://get.docker.com/ | sudo sh
